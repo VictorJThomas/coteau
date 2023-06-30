@@ -159,6 +159,8 @@ class _AgeViewState extends State<AgeView> {
   String name = '';
   String ageCategory = '';
   Color backgroundColor = Colors.white;
+  String imagePath = 'placeholder.jpg';
+  String age = '';
 
   Future<void> fetchAge(String name) async {
     final url = Uri.parse('https://api.agify.io/?name=$name');
@@ -166,24 +168,29 @@ class _AgeViewState extends State<AgeView> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final int age = data['age'];
+      age = data['age'].toString();
 
       setState(() {
-        if (age < 18) {
+        if (int.parse(age) < 18) {
           ageCategory = 'Joven';
           backgroundColor = Colors.green;
-        } else if (age >= 18 && age < 50) {
+          imagePath = 'joven.jpg';
+        } else if (int.parse(age) >= 18 && int.parse(age) < 50) {
           ageCategory = 'Adulto';
           backgroundColor = Colors.yellow;
+          imagePath = 'adulto.jpg';
         } else {
           ageCategory = 'Anciano';
           backgroundColor = Colors.red;
+          imagePath = 'anciano.jpg';
         }
       });
     } else {
       setState(() {
         ageCategory = '';
         backgroundColor = Colors.white;
+        imagePath = '';
+        age = '';
       });
     }
   }
@@ -217,11 +224,21 @@ class _AgeViewState extends State<AgeView> {
           'Nombre: $name',
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 10),
+        Text(
+          'Edad: $age',
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 20),
         Text(
           'Rango: $ageCategory',
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        if (imagePath.isNotEmpty) 
+          Image.asset(
+            imagePath,
+            width: 100,
+            height: 100,
+          ),
       ],
     );
   }
@@ -755,7 +772,7 @@ class MyBottomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.home_filled,
               color: Color.fromARGB(255, 22, 67, 30), size: 40),
-          label: 'Home',
+          label: 'Inicio',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.wb_sunny, color: Colors.green),
